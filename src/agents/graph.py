@@ -1,8 +1,8 @@
 from typing import TypedDict, List, Dict, Any
 from langgraph.graph import StateGraph, END
 from src.scrapers.orchestrator import run_parallel_scrapes
-from src.agents.reviewer import Reviewer
-from src.utils.db import job_exists, init_db
+from src.core.reviewer import Reviewer
+from src.core.db import job_exists, init_db
 import os
 
 class JobState(TypedDict):

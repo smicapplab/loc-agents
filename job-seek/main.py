@@ -4,8 +4,8 @@ import os
 from dotenv import load_dotenv
 from src.utils.pdf_processor import extract_text_from_pdf, structure_resume
 from src.agents.graph import create_job_hunt_graph
-from src.utils.emailer import send_job_email
-from src.utils.db import save_job, init_db
+from src.core.emailer import send_job_email
+from src.core.db import save_job, init_db
 import json
 
 # Load environment variables
