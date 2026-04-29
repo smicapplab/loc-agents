@@ -1,0 +1,14 @@
+fastapi
+uvicorn
+typer
+langgraph
+crawl4ai
+google-generativeai
+pymupdf
+pydantic
+pydantic-settings
+python-dotenv
+resend
+aiosqlite
+pytest
+pytest-asyncio
