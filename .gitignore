@@ -45,3 +45,7 @@ Thumbs.db
 # Project specific
 job-seek/data/profile.md
 job-seek/data/profile_index.json
+
+# Google API Credentials
+credentials.json
+token.json
