@@ -4,9 +4,6 @@ import google.generativeai as genai
 from typing import List, Dict, Optional
 from src.core.reviewer import Reviewer
 
-# Configure Gemini
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
-
 async def review_filtered_jobs(jobs: List[Dict], profile_md: str) -> List[Dict]:
     """
     Scores each filtered job using the shared Reviewer agent in parallel.
@@ -14,6 +11,9 @@ async def review_filtered_jobs(jobs: List[Dict], profile_md: str) -> List[Dict]:
     if not jobs:
         return []
         
+    # Ensure Gemini is configured with the key from environment
+    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
+    
     reviewer = Reviewer()
     scored_jobs = []
     
@@ -47,6 +47,8 @@ def extract_jobs_from_html(html_content: str) -> List[Dict]:
     """
     Uses Gemini to extract a list of jobs from the email HTML content.
     """
+    # Ensure Gemini is configured with the key from environment
+    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
     model = genai.GenerativeModel('gemini-2.0-flash')
     
     prompt = f"""
