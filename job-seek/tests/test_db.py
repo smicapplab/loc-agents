@@ -2,7 +2,7 @@ import pytest
 import os
 import asyncio
 import pytest_asyncio
-from src.utils.db import init_db, job_exists, save_job, DB_PATH
+from src.core.db import init_db, job_exists, save_job, DB_PATH
 
 @pytest_asyncio.fixture(autouse=True, loop_scope="function")
 async def setup_db():
