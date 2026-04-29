@@ -30,20 +30,37 @@ async def filter_node(state: JobState) -> Dict[str, Any]:
     print(f"Found {len(state['raw_jobs'])} raw jobs, {len(new_jobs)} are new.")
     return {"new_jobs": new_jobs}
 
+import random
+import asyncio
+
 async def review_node(state: JobState) -> Dict[str, Any]:
-    """Node: Scores each new job using the Reviewer agent."""
+    """Node: Scores each new job using the Reviewer agent in parallel."""
     reviewer = Reviewer()
-    scored_jobs = []
     
-    # We only review the first 20 new jobs to save tokens/time in this version
-    # Real-world might process all or a larger batch
-    jobs_to_review = state['new_jobs'][:20]
+    # Shuffle to ensure we get a mix of sources if we have many new jobs
+    jobs_to_review = state['new_jobs'].copy()
+    random.shuffle(jobs_to_review)
     
-    print(f"Reviewing {len(jobs_to_review)} jobs...")
-    for job in jobs_to_review:
-        scored_job = await reviewer.review_job(job, state['profile_md'])
-        if scored_job['score'] >= 7:
-            scored_jobs.append(scored_job)
+    # Limit pool
+    jobs_to_review = jobs_to_review[:100]
+    print(f"Reviewing {len(jobs_to_review)} jobs in parallel...")
+
+    semaphore = asyncio.Semaphore(10)
+    completed = 0
+
+    async def reviewed_job_task(job):
+        nonlocal completed
+        async with semaphore:
+            res = await reviewer.review_job(job, state['profile_md'])
+            completed += 1
+            if completed % 5 == 0 or completed == len(jobs_to_review):
+                print(f"Reviewed {completed}/{len(jobs_to_review)} jobs...")
+            return res
+
+    tasks = [reviewed_job_task(job) for job in jobs_to_review]
+    results = await asyncio.gather(*tasks)
+    
+    scored_jobs = [job for job in results if job.get('score', 0) >= 7]
             
     # Sort by score descending
     scored_jobs.sort(key=lambda x: x['score'], reverse=True)

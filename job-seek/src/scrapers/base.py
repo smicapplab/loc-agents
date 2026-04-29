@@ -6,10 +6,13 @@ class BaseScraper:
     def __init__(self):
         self.browser_config = BrowserConfig(
             headless=True,
-            verbose=False
+            verbose=False,
+            enable_stealth=True,
+            extra_args=["--disable-blink-features=AutomationControlled"]
         )
         self.run_config = CrawlerRunConfig(
-            cache_mode=CacheMode.ENABLED
+            cache_mode=CacheMode.BYPASS,
+            wait_until="domcontentloaded"
         )
 
     async def scrape_url(self, url: str) -> Optional[str]:

@@ -52,11 +52,11 @@ class LinkedInScraper(BaseScraper):
 class SeekScraper(BaseScraper):
     def __init__(self):
         super().__init__()
-        self.base_url = "https://www.seek.com.ph"
+        self.base_url = "https://ph.jobstreet.com"
         
         self.schema = {
-            "name": "Seek Jobs",
-            "baseSelector": "article[data-card-type='JobCard']",
+            "name": "JobStreet Jobs",
+            "baseSelector": "article",
             "fields": [
                 {"name": "title", "selector": "a[data-automation='jobTitle']", "type": "text"},
                 {"name": "company", "selector": "a[data-automation='jobCompany']", "type": "text"},
@@ -68,6 +68,8 @@ class SeekScraper(BaseScraper):
 
     def build_search_url(self, keywords: str) -> str:
         query = quote(keywords)
+        # JobStreet uses /keywords-jobs in the URL
+        # daterange=7 filters for the last 7 days
         return f"{self.base_url}/{query}-jobs?daterange=7"
 
     async def get_jobs(self, keywords: str) -> List[Dict]:
@@ -83,12 +85,14 @@ class SeekScraper(BaseScraper):
             if result.success:
                 try:
                     jobs = json.loads(result.extracted_content)
+                    valid_jobs = []
                     for job in jobs:
-                        if job.get('link'):
+                        if job.get('link') and job.get('title'):
                             if not job['link'].startswith('http'):
                                 job['link'] = f"{self.base_url}{job['link']}"
                             job['id'] = job['link'].split('?')[0].split('/')[-1]
-                    return jobs
+                            valid_jobs.append(job)
+                    return valid_jobs
                 except:
                     return []
             return []

@@ -24,6 +24,10 @@ async def run_parallel_scrapes(keywords: str, location: str = "Philippines") -> 
     # Run concurrently and gather results
     results = await asyncio.gather(*tasks)
 
+    source_names = ["LinkedIn", "Seek", "Indeed", "RemoteOK", "WWR"]
+    for name, jobs in zip(source_names, results):
+        print(f"[{name}] Found {len(jobs)} jobs")
+
     # Flatten the list of lists into a single list of job dicts
     flattened_jobs = [job for sublist in results for job in sublist]
     
