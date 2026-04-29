@@ -22,7 +22,7 @@ def structure_resume(text: str) -> tuple[str, str]:
         raise ValueError("GOOGLE_API_KEY environment variable not set")
     
     genai.configure(api_key=api_key)
-    model = genai.GenerativeModel('gemini-2.0-flash')
+    model = genai.GenerativeModel('gemini-2.5-flash')
     
     prompt = f"""
     Analyze the following resume text and provide two separate sections:
