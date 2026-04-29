@@ -1,7 +1,11 @@
 import os
 import json
 import google.generativeai as genai
+from typing import List, Dict, Optional
 from src.core.reviewer import Reviewer
+
+# Configure Gemini
+genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 async def review_filtered_jobs(jobs: List[Dict], profile_md: str) -> List[Dict]:
     """
@@ -24,9 +28,6 @@ async def review_filtered_jobs(jobs: List[Dict], profile_md: str) -> List[Dict]:
             
     scored_jobs.sort(key=lambda x: x['score'], reverse=True)
     return scored_jobs
-
-# Configure Gemini
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
 
 def filter_by_salary(job: Dict, min_salary: int = 250000) -> bool:
     """
@@ -65,7 +66,6 @@ def extract_jobs_from_html(html_content: str) -> List[Dict]:
     
     try:
         response = model.generate_content(prompt)
-        # Clean response text (remove markdown backticks if present)
         text = response.text.strip()
         if text.startswith("```json"):
             text = text[7:-3].strip()
