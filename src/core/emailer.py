@@ -4,7 +4,7 @@ from email.mime.multipart import MIMEMultipart
 import os
 from typing import List, Dict
 
-def send_job_email(jobs: List[Dict]):
+def send_job_email(jobs: List[Dict], subject: str = None):
     """
     Sends an aggregated email of high-scoring job matches using Gmail SMTP.
     """
@@ -20,7 +20,7 @@ def send_job_email(jobs: List[Dict]):
     msg = MIMEMultipart()
     msg['From'] = email_user
     msg['To'] = email_to
-    msg['Subject'] = f"Top {len(jobs)} Job Matches for Your Profile"
+    msg['Subject'] = subject or f"Top {len(jobs)} Job Matches for Your Profile"
 
     html_content = f"""
     <html>

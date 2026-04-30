@@ -83,7 +83,8 @@ async def process_emails():
     # 8. Send Summary Email
     if all_high_scored_jobs:
         typer.secho(f"\nFound {len(all_high_scored_jobs)} total matches!", fg=typer.colors.GREEN, bold=True)
-        send_job_email(all_high_scored_jobs[:10])
+        subject = f"JobFilter: {len(all_high_scored_jobs[:10])} matching alerts in your Gmail"
+        send_job_email(all_high_scored_jobs[:10], subject=subject)
     else:
         typer.echo("\nNo high-scoring matches found today.")
 
