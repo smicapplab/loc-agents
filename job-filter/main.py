@@ -25,9 +25,9 @@ async def process_emails():
         typer.secho("Error: Gmail Client could not be initialized. Check credentials.", fg=typer.colors.RED)
         return
 
-    # 1. Determine Search Query (last 2 days)
+    # 1. Determine Search Query (last 2 days, excluding already processed)
     two_days_ago = (datetime.now() - timedelta(days=2)).strftime('%Y/%m/%d')
-    query = f"from:(linkedin.com OR indeed.com OR jobstreet.com) after:{two_days_ago}"
+    query = f"from:(linkedin.com OR indeed.com OR jobstreet.com) after:{two_days_ago} -label:Jobs"
     typer.echo(f"Searching for emails with query: {query}")
 
     # 2. Search Messages
