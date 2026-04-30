@@ -38,7 +38,7 @@ async def process_emails():
         return
 
     # 3. Load Profile
-    profile_md_path = "job-seek/data/profile.md"
+    profile_md_path = "data/profile.md"
     if not os.path.exists(profile_md_path):
         typer.secho(f"Error: Profile not found at {profile_md_path}", fg=typer.colors.RED)
         return

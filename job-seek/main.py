@@ -17,8 +17,8 @@ app = typer.Typer(help="PH Job-Seek AI Agent CLI")
 
 @app.command()
 def sync(
-    resume_path: str = typer.Option("job-seek/data/resume.pdf", help="Path to the resume PDF file"),
-    output_dir: str = typer.Option("job-seek/data", help="Directory to save the generated profile files")
+    resume_path: str = typer.Option("data/resume.pdf", help="Path to the resume PDF file"),
+    output_dir: str = typer.Option("data", help="Directory to save the generated profile files")
 ):
     """
     Synchronizes the resume PDF with the structured profile files (MD and JSON).
@@ -68,8 +68,8 @@ def search(
     Runs the autonomous job hunt using LangGraph and sends an email report.
     """
     # 1. Load Profile
-    profile_md_path = "job-seek/data/profile.md"
-    profile_json_path = "job-seek/data/profile_index.json"
+    profile_md_path = "data/profile.md"
+    profile_json_path = "data/profile_index.json"
     
     if not os.path.exists(profile_md_path) or not os.path.exists(profile_json_path):
         typer.secho("Error: Profile files not found. Please run 'sync' first.", fg=typer.colors.RED)
