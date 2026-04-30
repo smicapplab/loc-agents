@@ -21,5 +21,7 @@ All agents use a single source of truth for configuration located in the root `.
 
 ## Getting Started
 1. Install dependencies: `cd job-seek && pip install -r requirements.txt`
-2. Set up your `.env` in the root.
-3. Use the scripts in `./scripts/` to run the agents.
+2. Set up your `.env` in the root (see `.env.example`).
+3. Place your resume at `job-seek/data/resume.pdf`.
+4. Initialize your profile: `./scripts/sync.sh`
+5. Use the scripts in `./scripts/` to run the agents.

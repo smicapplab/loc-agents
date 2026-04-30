@@ -17,8 +17,8 @@ app = typer.Typer(help="PH Job-Seek AI Agent CLI")
 
 @app.command()
 def sync(
-    resume_path: str = typer.Option("data/resume.pdf", help="Path to the resume PDF file"),
-    output_dir: str = typer.Option("data", help="Directory to save the generated profile files")
+    resume_path: str = typer.Option("job-seek/data/resume.pdf", help="Path to the resume PDF file"),
+    output_dir: str = typer.Option("job-seek/data", help="Directory to save the generated profile files")
 ):
     """
     Synchronizes the resume PDF with the structured profile files (MD and JSON).
@@ -35,7 +35,7 @@ def sync(
         typer.echo("Text extracted successfully.")
 
         # 2. Structure with Gemini
-        typer.echo("Consulting Gemini for structuring (this may take a moment)...")
+        typer.echo("Consulting AI for structuring (this may take a moment)...")
         md_content, json_index = structure_resume(text)
 
         # 3. Save files
@@ -62,15 +62,14 @@ def sync(
 def search(
     keywords: str = typer.Option(None, help="Job keywords to search for. If not provided, will use titles from profile_index.json"),
     location: str = typer.Option("Philippines", help="Location to search for jobs"),
-    limit: int = typer.Option(5, help="Number of top matches to display"),
-    email: bool = typer.Option(False, "--email", help="Send results via email")
+    limit: int = typer.Option(5, help="Number of top matches to display")
 ):
     """
-    Runs the autonomous job hunt using LangGraph.
+    Runs the autonomous job hunt using LangGraph and sends an email report.
     """
     # 1. Load Profile
-    profile_md_path = "data/profile.md"
-    profile_json_path = "data/profile_index.json"
+    profile_md_path = "job-seek/data/profile.md"
+    profile_json_path = "job-seek/data/profile_index.json"
     
     if not os.path.exists(profile_md_path) or not os.path.exists(profile_json_path):
         typer.secho("Error: Profile files not found. Please run 'sync' first.", fg=typer.colors.RED)
