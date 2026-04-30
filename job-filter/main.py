@@ -8,8 +8,10 @@ from src.core.emailer import send_job_email
 from logic import extract_jobs_from_html, filter_by_salary, review_filtered_jobs
 import json
 
-# Load environment variables
-load_dotenv()
+# Load environment variables from the root .env
+current_dir = os.path.dirname(os.path.abspath(__file__))
+root_dir = os.path.dirname(current_dir)
+load_dotenv(os.path.join(root_dir, ".env"))
 
 app = typer.Typer(help="Job-Filter Agent CLI")
 
