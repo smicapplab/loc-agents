@@ -48,7 +48,7 @@ async def process_emails():
 
     # Get label IDs
     jobs_label_id = client.get_or_create_label("Jobs")
-    updates_label_id = "UPDATES" # Built-in category Updates
+    updates_label_id = "CATEGORY_UPDATES" # Built-in category Updates
 
     all_high_scored_jobs = []
 
