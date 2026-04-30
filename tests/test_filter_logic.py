@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import MagicMock, patch
-from job_filter.logic import extract_jobs_from_html, filter_by_salary
+from logic import extract_jobs_from_html, filter_by_salary
 
 def test_filter_by_salary():
     # Salary >= 250k should pass
@@ -12,7 +12,7 @@ def test_filter_by_salary():
     assert filter_by_salary({'salary': None}) == True
     assert filter_by_salary({}) == True
 
-@patch('job_filter.logic.genai.GenerativeModel')
+@patch('logic.genai.GenerativeModel')
 def test_extract_jobs_from_html(mock_model_class):
     mock_model = mock_model_class.return_value
     mock_response = MagicMock()
