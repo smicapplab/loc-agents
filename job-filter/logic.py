@@ -1,6 +1,7 @@
 import os
 import json
 import google.generativeai as genai
+from openai import OpenAI
 from typing import List, Dict, Optional
 from src.core.reviewer import Reviewer
 
@@ -11,9 +12,6 @@ async def review_filtered_jobs(jobs: List[Dict], profile_md: str) -> List[Dict]:
     if not jobs:
         return []
         
-    # Ensure Gemini is configured with the key from environment
-    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
-    
     reviewer = Reviewer()
     scored_jobs = []
     
@@ -45,11 +43,9 @@ def filter_by_salary(job: Dict, min_salary: int = 250000) -> bool:
 
 def extract_jobs_from_html(html_content: str) -> List[Dict]:
     """
-    Uses Gemini to extract a list of jobs from the email HTML content.
+    Uses an AI provider to extract a list of jobs from the email HTML content.
     """
-    # Ensure Gemini is configured with the key from environment
-    genai.configure(api_key=os.environ.get("GOOGLE_API_KEY"))
-    model = genai.GenerativeModel('gemini-2.0-flash')
+    provider = os.getenv("AI_PROVIDER", "gemini").lower()
     
     prompt = f"""
     Extract a list of job listings from the following email HTML. 
@@ -65,16 +61,46 @@ def extract_jobs_from_html(html_content: str) -> List[Dict]:
     Email HTML:
     {html_content}
     """
-    
-    try:
-        response = model.generate_content(prompt)
-        text = response.text.strip()
-        if text.startswith("```json"):
-            text = text[7:-3].strip()
-        elif text.startswith("```"):
-            text = text[3:-3].strip()
+
+    if provider == "openai":
+        try:
+            client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+            model_name = os.getenv("OPENAI_MODEL", "gpt-4o")
+            response = client.chat.completions.create(
+                model=model_name,
+                messages=[{"role": "user", "content": prompt}],
+                response_format={"type": "json_object"}
+            )
+            text = response.choices[0].message.content.strip()
+            # OpenAI with response_format="json_object" might return a root object
+            # if the prompt doesn't specify an array root.
+            # But usually it follows instructions.
+            data = json.loads(text)
+            if isinstance(data, dict) and "jobs" in data:
+                return data["jobs"]
+            return data if isinstance(data, list) else []
+        except Exception as e:
+            print(f"Error extracting jobs with OpenAI: {e}")
+            return []
+    else:
+        # Default to Gemini
+        try:
+            api_key = os.environ.get("GOOGLE_API_KEY")
+            if not api_key:
+                print("GOOGLE_API_KEY not found in environment")
+                return []
+            genai.configure(api_key=api_key)
+            model_name = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
+            model = genai.GenerativeModel(model_name)
             
-        return json.loads(text)
-    except Exception as e:
-        print(f"Error extracting jobs with Gemini: {e}")
-        return []
+            response = model.generate_content(prompt)
+            text = response.text.strip()
+            if text.startswith("```json"):
+                text = text[7:-3].strip()
+            elif text.startswith("```"):
+                text = text[3:-3].strip()
+                
+            return json.loads(text)
+        except Exception as e:
+            print(f"Error extracting jobs with Gemini: {e}")
+            return []
