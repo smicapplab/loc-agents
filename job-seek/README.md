@@ -26,7 +26,7 @@ An autonomous AI agent designed to search, filter, and aggregate job listings fr
 3. **Usage via Scripts:**
    It is recommended to run the agent using the scripts in the project root:
    - Sync resume: `./scripts/job-seek.sh sync`
-   - Search jobs: `./scripts/job-seek.sh search --email`
+   - Search jobs: `./scripts/job-seek.sh search`
 
 ## Architecture
 - **LangGraph:** Orchestrates the scraping, filtering, and scoring workflow.

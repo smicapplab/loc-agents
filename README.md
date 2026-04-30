@@ -7,7 +7,7 @@ A repository for autonomous AI agents designed to automate personal workflows, r
 ### [PH Job-Seek Agent](./job-seek)
 An autonomous agent that scrapes job boards (LinkedIn, Indeed, Seek, RemoteOK, WWR), filters them against a personal resume using AI (OpenAI or Gemini), and sends a curated daily email.
 
-**Run:** `./scripts/job-seek.sh search --email`
+**Run:** `./scripts/job-seek.sh search`
 
 ### [Job-Filter Agent](./job-filter)
 An agent that monitors Gmail for job alerts, extracts listings using AI, filters by salary, and scores them against a candidate profile.

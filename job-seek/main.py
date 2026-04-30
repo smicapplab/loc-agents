@@ -145,9 +145,9 @@ def search(
         if eval_data.get('match_highlights'):
             typer.echo(f"Highlights: {', '.join(eval_data.get('match_highlights'))}")
 
-    # 6. Email Results
-    if email:
-        typer.echo("\nSending email...")
+    # 6. Email Results (Always enabled)
+    if scored_jobs:
+        typer.echo("\nSending email report...")
         send_job_email(top_matches)
 
 if __name__ == "__main__":
