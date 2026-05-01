@@ -1,5 +1,5 @@
 import fitz
-import google.generativeai as genai
+from google import genai
 from openai import OpenAI
 import json
 import os
@@ -55,12 +55,14 @@ def structure_resume(text: str) -> tuple[str, str]:
         if not api_key:
             raise ValueError("GOOGLE_API_KEY environment variable not set")
         
-        genai.configure(api_key=api_key)
+        client = genai.Client(api_key=api_key)
         model_name = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-        model = genai.GenerativeModel(model_name)
         
         try:
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt
+            )
             content = response.text.strip()
             if content.startswith("```json"):
                 content = content.replace("```json", "", 1).replace("```", "", 1).strip()

@@ -3,7 +3,7 @@ uvicorn
 typer
 langgraph
 crawl4ai
-google-generativeai
+google-genai
 pymupdf
 pydantic
 pydantic-settings

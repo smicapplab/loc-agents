@@ -13,7 +13,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 root_dir = os.path.dirname(current_dir)
 load_dotenv(os.path.join(root_dir, ".env"))
 
-app = typer.Typer(help="PH Job-Seek AI Agent CLI")
+app = typer.Typer(help="PH Job-Seek AI Agent CLI", no_args_is_help=True)
 
 @app.command()
 def sync(

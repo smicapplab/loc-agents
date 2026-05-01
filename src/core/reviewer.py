@@ -1,4 +1,4 @@
-import google.generativeai as genai
+from google import genai
 from openai import OpenAI
 import os
 import json
@@ -14,9 +14,8 @@ class Reviewer:
             api_key = os.getenv("GOOGLE_API_KEY")
             if not api_key:
                 raise ValueError("GOOGLE_API_KEY not found in environment")
-            genai.configure(api_key=api_key)
+            self.client = genai.Client(api_key=api_key)
             self.model_name = model_name or os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-            self.model = genai.GenerativeModel(self.model_name)
 
     async def review_job(self, job: Dict[str, Any], profile_md: str) -> Dict[str, Any]:
         """
@@ -59,7 +58,10 @@ class Reviewer:
                 return job
         else:
             try:
-                response = self.model.generate_content(prompt)
+                response = self.client.models.generate_content(
+                    model=self.model_name,
+                    contents=prompt
+                )
                 content = response.text.strip()
                 if content.startswith("```json"):
                     content = content.replace("```json", "", 1).replace("```", "", 1).strip()

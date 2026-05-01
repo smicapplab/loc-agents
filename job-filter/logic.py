@@ -1,6 +1,6 @@
 import os
 import json
-import google.generativeai as genai
+from google import genai
 from openai import OpenAI
 from typing import List, Dict, Optional
 from src.core.reviewer import Reviewer
@@ -89,11 +89,13 @@ def extract_jobs_from_html(html_content: str) -> List[Dict]:
             if not api_key:
                 print("GOOGLE_API_KEY not found in environment")
                 return []
-            genai.configure(api_key=api_key)
+            client = genai.Client(api_key=api_key)
             model_name = os.getenv("GEMINI_MODEL", "gemini-2.0-flash")
-            model = genai.GenerativeModel(model_name)
             
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model=model_name,
+                contents=prompt
+            )
             text = response.text.strip()
             if text.startswith("```json"):
                 text = text[7:-3].strip()
