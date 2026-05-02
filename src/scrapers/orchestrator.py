@@ -29,8 +29,9 @@ async def run_parallel_scrapes(keywords_list: List[str], location: str = "Philip
             safe_scrape(linkedin.get_jobs, kw, location),
             safe_scrape(seek.get_jobs, kw),
             safe_scrape(indeed.get_jobs, kw, location),
-            safe_scrape(remoteok.get_jobs, kw),
-            safe_scrape(wwr.get_jobs, kw)
+            # remoteok and wwr disabled per user feedback
+            # safe_scrape(remoteok.get_jobs, kw),
+            # safe_scrape(wwr.get_jobs, kw)
         ]
         results = await asyncio.gather(*tasks)
         return [job for board_jobs in results for job in board_jobs]
