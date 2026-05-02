@@ -6,7 +6,7 @@ from src.core.db import job_exists, init_db
 import os
 
 class JobState(TypedDict):
-    keywords: str
+    keywords: List[str]
     location: str
     profile_md: str
     raw_jobs: List[Dict[str, Any]]
@@ -15,7 +15,8 @@ class JobState(TypedDict):
 
 async def scrape_node(state: JobState) -> Dict[str, Any]:
     """Node: Scrapes job boards for the given keywords and location."""
-    print(f"Scraping jobs for '{state['keywords']}' in {state['location']}...")
+    keywords_str = ", ".join(state['keywords'])
+    print(f"Scraping jobs for keywords: [{keywords_str}] in {state['location']}...")
     jobs = await run_parallel_scrapes(state['keywords'], state['location'])
     return {"raw_jobs": jobs}
 
