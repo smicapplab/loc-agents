@@ -83,7 +83,7 @@ def search(
         
     # 2. Determine Keywords List
     if keywords:
-        keywords_list = [k.strip() for k in keywords.split(",")]
+        keywords_list = list(dict.fromkeys([k.strip() for k in keywords.split(",") if k.strip()]))
     else:
         keywords_list = profile_index.get("target_job_titles", ["Software Engineer"])
             

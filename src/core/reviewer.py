@@ -62,6 +62,8 @@ class Reviewer:
                     model=self.model_name,
                     contents=prompt
                 )
+                if not response or not response.text:
+                    raise ValueError("Empty response from Gemini")
                 content = response.text.strip()
                 if content.startswith("```json"):
                     content = content.replace("```json", "", 1).replace("```", "", 1).strip()
@@ -71,6 +73,12 @@ class Reviewer:
                 job['evaluation'] = {"error": f"Gemini Error: {str(e)}"}
                 return job
             
+        if not content:
+            print(f"Error: No content returned for job {job.get('title')}")
+            job['score'] = 0
+            job['evaluation'] = {"error": "Empty AI response"}
+            return job
+
         try:
             evaluation = json.loads(content)
             job['evaluation'] = evaluation
