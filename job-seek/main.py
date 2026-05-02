@@ -60,7 +60,7 @@ def sync(
 
 @app.command()
 def search(
-    keywords: str = typer.Option(None, help="Job keywords to search for. If not provided, will use titles from profile_index.json"),
+    keywords: str = typer.Option(None, help="Job keywords to search for (comma-separated). If not provided, will use all titles from profile_index.json"),
     location: str = typer.Option("Philippines", help="Location to search for jobs"),
     limit: int = typer.Option(5, help="Number of top matches to display")
 ):
@@ -81,15 +81,13 @@ def search(
     with open(profile_json_path, "r") as f:
         profile_index = json.load(f)
         
-    # 2. Determine Keywords
-    if not keywords:
-        titles = profile_index.get("target_job_titles", [])
-        if titles:
-            keywords = titles[0] # Use the first title as default
-        else:
-            keywords = "Software Engineer"
+    # 2. Determine Keywords List
+    if keywords:
+        keywords_list = [k.strip() for k in keywords.split(",")]
+    else:
+        keywords_list = profile_index.get("target_job_titles", ["Software Engineer"])
             
-    typer.echo(f"Starting job hunt for '{keywords}' in {location}...")
+    typer.echo(f"Starting job hunt for keywords: {', '.join(keywords_list)} in {location}...")
     
     # 3. Initialize Graph
     graph = create_job_hunt_graph()
@@ -97,7 +95,7 @@ def search(
     # 4. Run Graph
     async def run_hunt():
         initial_state = {
-            "keywords": keywords,
+            "keywords": keywords_list,
             "location": location,
             "profile_md": profile_md,
             "raw_jobs": [],
@@ -147,7 +145,7 @@ def search(
     # 6. Email Results (Always enabled)
     if scored_jobs:
         typer.echo("\nSending email report...")
-        subject = f"JobBoard: Found {len(top_matches)} matches for {keywords}"
+        subject = f"JobBoard: Found {len(top_matches)} matches for {', '.join(keywords_list)}"
         send_job_email(top_matches, subject=subject)
 
 if __name__ == "__main__":
