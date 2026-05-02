@@ -2,9 +2,9 @@ import asyncio
 from typing import List, Dict
 from .board_scrapers import LinkedInScraper, SeekScraper, IndeedScraper, RemoteOKScraper, WeWorkRemotelyScraper
 
-async def run_parallel_scrapes(keywords: str, location: str = "Philippines") -> List[Dict]:
+async def run_parallel_scrapes(keywords_list: List[str], location: str = "Philippines") -> List[Dict]:
     """
-    Triggers LinkedIn, Seek, Indeed, RemoteOK, and WWR scrapers concurrently.
+    Triggers all scrapers for every keyword in the list concurrently.
     """
     linkedin = LinkedInScraper()
     seek = SeekScraper()
@@ -12,23 +12,25 @@ async def run_parallel_scrapes(keywords: str, location: str = "Philippines") -> 
     remoteok = RemoteOKScraper()
     wwr = WeWorkRemotelyScraper()
 
-    # Create tasks for all scrapers
-    tasks = [
-        linkedin.get_jobs(keywords, location),
-        seek.get_jobs(keywords),
-        indeed.get_jobs(keywords, location),
-        remoteok.get_jobs(keywords),
-        wwr.get_jobs(keywords)
-    ]
+    async def scrape_for_keyword(kw):
+        tasks = [
+            linkedin.get_jobs(kw, location),
+            seek.get_jobs(kw),
+            indeed.get_jobs(kw, location),
+            remoteok.get_jobs(kw),
+            wwr.get_jobs(kw)
+        ]
+        return await asyncio.gather(*tasks)
 
-    # Run concurrently and gather results
-    results = await asyncio.gather(*tasks)
+    # Run searches for all keywords in parallel
+    keyword_tasks = [scrape_for_keyword(kw) for kw in keywords_list]
+    results_per_keyword = await asyncio.gather(*keyword_tasks)
 
-    source_names = ["LinkedIn", "Seek", "Indeed", "RemoteOK", "WWR"]
-    for name, jobs in zip(source_names, results):
-        print(f"[{name}] Found {len(jobs)} jobs")
+    # Flatten results: keyword_tasks -> boards -> jobs
+    all_jobs = []
+    for keyword_results in results_per_keyword:
+        for board_jobs in keyword_results:
+            all_jobs.extend(board_jobs)
 
-    # Flatten the list of lists into a single list of job dicts
-    flattened_jobs = [job for sublist in results for job in sublist]
-    
-    return flattened_jobs
+    print(f"Total jobs found across all keywords: {len(all_jobs)}")
+    return all_jobs
